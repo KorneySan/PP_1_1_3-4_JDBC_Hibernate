@@ -27,7 +27,14 @@ public class UserDaoJDBCImpl implements UserDao {
     public void createUsersTable() {
         try {
             statement.execute("CREATE TABLE IF NOT EXISTS users(id BIGINT primary key auto_increment, name TEXT, lastName TEXT, age TINYINT UNSIGNED);");
+            Util.connection.commit();
         } catch (SQLException throwables) {
+            try {
+                Util.connection.rollback();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                throw new RuntimeException();
+            }
             throwables.printStackTrace();
             throw new RuntimeException();
         }
@@ -36,7 +43,14 @@ public class UserDaoJDBCImpl implements UserDao {
     public void dropUsersTable() {
         try {
             statement.execute("DROP TABLE IF EXISTS users;");
+            Util.connection.commit();
         } catch (SQLException throwables) {
+            try {
+                Util.connection.rollback();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                throw new RuntimeException();
+            }
             throwables.printStackTrace();
             throw new RuntimeException();
         }
@@ -45,7 +59,14 @@ public class UserDaoJDBCImpl implements UserDao {
     public void saveUser(String name, String lastName, byte age) {
         try {
             statement.executeUpdate(String.format("INSERT INTO users (name, lastName, age) VALUES ('%s', '%s', %d);", name, lastName, age));
+            Util.connection.commit();
         } catch (SQLException throwables) {
+            try {
+                Util.connection.rollback();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                throw new RuntimeException();
+            }
             throwables.printStackTrace();
             throw new RuntimeException();
         }
@@ -54,7 +75,14 @@ public class UserDaoJDBCImpl implements UserDao {
     public void removeUserById(long id) {
         try {
             statement.executeUpdate(String.format("DELETE FROM users WHERE id=%d;", id));
+            Util.connection.commit();
         } catch (SQLException throwables) {
+            try {
+                Util.connection.rollback();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                throw new RuntimeException();
+            }
             throwables.printStackTrace();
             throw new RuntimeException();
         }
@@ -72,7 +100,14 @@ public class UserDaoJDBCImpl implements UserDao {
                 user.setAge(resultSet.getByte("age"));
                 users.add(user);
             }
+            Util.connection.commit();
         } catch (SQLException throwables) {
+            try {
+                Util.connection.rollback();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                throw new RuntimeException();
+            }
             throwables.printStackTrace();
             throw new RuntimeException();
         }
