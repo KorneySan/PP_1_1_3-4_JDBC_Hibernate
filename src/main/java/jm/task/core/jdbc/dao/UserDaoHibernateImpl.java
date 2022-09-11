@@ -18,7 +18,7 @@ public class UserDaoHibernateImpl implements UserDao {
         Transaction transaction = null;
         try (Session session = Util.sessionFactory.openSession()) {
             transaction = session.beginTransaction();
-            session.createSQLQuery("CREATE TABLE IF NOT EXISTS users(id BIGINT primary key auto_increment, name TEXT, lastName TEXT, age TINYINT UNSIGNED);");
+            session.createSQLQuery("CREATE TABLE IF NOT EXISTS users(id BIGINT primary key auto_increment, name TEXT, lastName TEXT, age TINYINT UNSIGNED);").executeUpdate();
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {
@@ -33,7 +33,7 @@ public class UserDaoHibernateImpl implements UserDao {
         Transaction transaction = null;
         try (Session session = Util.sessionFactory.openSession()) {
             transaction = session.beginTransaction();
-            session.createSQLQuery("DROP TABLE IF EXISTS users;");
+            session.createSQLQuery("DROP TABLE IF EXISTS users;").executeUpdate();
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {
@@ -64,7 +64,12 @@ public class UserDaoHibernateImpl implements UserDao {
         Transaction transaction = null;
         try (Session session = Util.sessionFactory.openSession()) {
             transaction = session.beginTransaction();
-            session.createSQLQuery(String.format("DELETE FROM users WHERE id=%d;", id));
+            //loading User
+            User user = session.load(User.class, id);
+            if (user != null) {
+                //remove User with all dependencies (all foreign records if exist)
+                session.delete(user);
+            }
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {
@@ -89,7 +94,7 @@ public class UserDaoHibernateImpl implements UserDao {
         Transaction transaction = null;
         try (Session session = Util.sessionFactory.openSession()) {
             transaction = session.beginTransaction();
-            session.createSQLQuery("TRUNCATE TABLE users;");
+            session.createSQLQuery("DELETE from users;").executeUpdate();
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {
